@@ -1,5 +1,5 @@
 import { Play } from 'phosphor-react';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   CountdownContainer,
   FormContainer,
@@ -10,10 +10,15 @@ import {
   TaskInput,
 } from './styles';
 
-export function Home() {
-  const { register, handleSubmit, watch } = useForm();
+type FormValues = {
+  task: string;
+  minutesAmount: number;
+};
 
-  const handleCreateNewCycle = (data: any) => {
+export function Home() {
+  const { register, handleSubmit, watch } = useForm<FormValues>();
+
+  const handleCreateNewCycle = (data: FormValues) => {
     console.log(data);
   };
 
