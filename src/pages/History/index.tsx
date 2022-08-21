@@ -72,6 +72,38 @@ export function History() {
                 <Status statusColor='green'>Concluído</Status>
               </td>
             </tr>
+            <tr>
+              <td>Tarefa</td>
+              <td>30 minutos</td>
+              <td>Há cerca de 2 meses</td>
+              <td>
+                <Status statusColor='green'>Concluído</Status>
+              </td>
+            </tr>
+            <tr>
+              <td>Tarefa</td>
+              <td>30 minutos</td>
+              <td>Há cerca de 2 meses</td>
+              <td>
+                <Status statusColor='green'>Concluído</Status>
+              </td>
+            </tr>
+            <tr>
+              <td>Tarefa</td>
+              <td>30 minutos</td>
+              <td>Há cerca de 2 meses</td>
+              <td>
+                <Status statusColor='green'>Concluído</Status>
+              </td>
+            </tr>
+            <tr>
+              <td>Tarefa</td>
+              <td>30 minutos</td>
+              <td>Há cerca de 2 meses</td>
+              <td>
+                <Status statusColor='green'>Concluído</Status>
+              </td>
+            </tr>
           </tbody>
         </table>
       </HistoryList>

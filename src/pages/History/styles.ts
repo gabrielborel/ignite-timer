@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 export const HistoryContainer = styled.main`
   flex: 1;
+  height: 100%;
   padding: 3.5rem;
 
   display: flex;
@@ -24,6 +25,8 @@ export const HistoryList = styled.div`
     border-collapse: collapse;
 
     th {
+      position: sticky;
+      top: 0;
       background: ${(props) => props.theme['gray-600']};
       padding: 1rem;
       text-align: left;
