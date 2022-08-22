@@ -1,17 +1,15 @@
-import { createContext, ReactNode, useContext, useState } from 'react';
+import { createContext, ReactNode, useContext, useState, useReducer } from 'react';
+import {
+  ActionTypes,
+  addNewCycleAction,
+  interruptCurrentCycleAction,
+  markCurrentCycleAsFinishedAction,
+} from '../reducers/cycles/actions';
+import { cyclesReducer, ICycle } from '../reducers/cycles/reducer';
 
 interface NewCycleData {
   task: string;
   minutesAmount: number;
-}
-
-export interface ICycle {
-  id: string;
-  task: string;
-  minutesAmount: number;
-  startDate: Date;
-  interruptedDate?: Date;
-  finishedDate?: Date;
 }
 
 interface CyclesContextData {
@@ -32,9 +30,14 @@ interface CyclesContextProviderProps {
 }
 
 export const CyclesContextProvider = ({ children }: CyclesContextProviderProps) => {
-  const [cycles, setCycles] = useState<ICycle[]>([]);
-  const [activeCycleId, setActiveCycleId] = useState<string | null>('');
+  const [cyclesState, dispatch] = useReducer(cyclesReducer, {
+    cycles: [],
+    activeCycleId: null,
+  });
+
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
+
+  const { activeCycleId, cycles } = cyclesState;
 
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId);
 
@@ -46,27 +49,17 @@ export const CyclesContextProvider = ({ children }: CyclesContextProviderProps) 
       startDate: new Date(),
     };
 
-    setCycles((prevCycles) => [...prevCycles, newCycle]);
-    setActiveCycleId(newCycle.id);
+    dispatch(addNewCycleAction(newCycle));
+
     setAmountSecondsPassed(0);
   };
 
   const interruptCurrentCycle = () => {
-    setCycles((previousCycles) =>
-      previousCycles.map((cycle) =>
-        cycle.id === activeCycleId ? { ...cycle, interruptedDate: new Date() } : { ...cycle }
-      )
-    );
-
-    setActiveCycleId(null);
+    dispatch(interruptCurrentCycleAction());
   };
 
   const markCurrentCycleAsFinished = () => {
-    setCycles((previousCycles) =>
-      previousCycles.map((cycle) =>
-        cycle.id === activeCycleId ? { ...cycle, finishedDate: new Date() } : { ...cycle }
-      )
-    );
+    dispatch(markCurrentCycleAsFinishedAction());
   };
 
   const setSecondsPassed = (seconds: number) => {
