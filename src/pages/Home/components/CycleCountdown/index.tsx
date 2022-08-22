@@ -1,8 +1,19 @@
 import { differenceInSeconds } from 'date-fns';
 import { useEffect, useState } from 'react';
+import { CyclesContextProvider, useCycles } from '../../../../contexts/CyclesContext';
+import { CountdownContainer, Separator } from './styles';
 
 export const CycleCountdown = () => {
-  const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
+  const {
+    activeCycle,
+    activeCycleId,
+    markCurrentCycleAsFinished,
+    amountSecondsPassed,
+    setSecondsPassed,
+  } = useCycles();
+
+  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0;
+  const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0;
 
   useEffect(() => {
     let interval: number;
@@ -11,16 +22,11 @@ export const CycleCountdown = () => {
         const secondsDifference = differenceInSeconds(new Date(), activeCycle.startDate);
 
         if (secondsDifference >= totalSeconds) {
-          setCycles((previousCycles) =>
-            previousCycles.map((cycle) =>
-              cycle.id === activeCycleId ? { ...cycle, finishedDate: new Date() } : { ...cycle }
-            )
-          );
-
-          setAmountSecondsPassed(totalSeconds);
+          markCurrentCycleAsFinished();
+          setSecondsPassed(totalSeconds);
           clearInterval(interval);
         } else {
-          setAmountSecondsPassed(secondsDifference);
+          setSecondsPassed(secondsDifference);
         }
       }, 1000);
     }
@@ -30,16 +36,27 @@ export const CycleCountdown = () => {
     };
   }, [activeCycle, totalSeconds, activeCycleId]);
 
-  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0;
-  const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0;
+  const minutesAmount = Math.floor(currentSeconds / 60);
+  const secondsAmount = currentSeconds % 60;
+
+  const minutes = String(minutesAmount).padStart(2, '0');
+  const seconds = String(secondsAmount).padStart(2, '0');
+
+  useEffect(() => {
+    if (activeCycle) {
+      window.document.title = `${minutes}:${seconds}`;
+    }
+  }, [minutes, seconds, activeCycle]);
 
   return (
-    <CountdownContainer>
-      <span>{minutes[0]}</span>
-      <span>{minutes[1]}</span>
-      <Separator>:</Separator>
-      <span>{seconds[0]}</span>
-      <span>{seconds[1]}</span>
-    </CountdownContainer>
+    <CyclesContextProvider>
+      <CountdownContainer>
+        <span>{minutes[0]}</span>
+        <span>{minutes[1]}</span>
+        <Separator>:</Separator>
+        <span>{seconds[0]}</span>
+        <span>{seconds[1]}</span>
+      </CountdownContainer>
+    </CyclesContextProvider>
   );
 };

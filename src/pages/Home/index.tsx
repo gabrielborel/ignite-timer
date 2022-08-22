@@ -1,14 +1,9 @@
-import { Play } from 'phosphor-react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import {
-  CountdownContainer,
-  FormContainer,
-  HomeContainer,
-  MinutesAmountInput,
-  Separator,
-  StartCountdownButton,
-  TaskInput,
-} from './styles';
+import { HandPalm, Play } from 'phosphor-react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { CyclesContextProvider, useCycles } from '../../contexts/CyclesContext';
+import { CycleCountdown } from './components/CycleCountdown';
+import { NewCycleForm } from './components/NewCycleForm';
+import { HomeContainer, StartCountdownButton, StopCountdownButton } from './styles';
 
 interface NewCycleFormValues {
   task: string;
@@ -16,66 +11,47 @@ interface NewCycleFormValues {
 }
 
 export function Home() {
-  const { register, handleSubmit, watch, reset } = useForm<NewCycleFormValues>({
+  const { activeCycle, createNewCycle, interruptCurrentCycle } = useCycles();
+
+  const newCycleForm = useForm<NewCycleFormValues>({
     defaultValues: {
       task: '',
       minutesAmount: 0,
     },
   });
 
-  const handleCreateNewCycle = (data: NewCycleFormValues) => {
-    console.log(data);
-    reset();
-  };
+  const { handleSubmit, watch, reset } = newCycleForm;
 
   const task = watch('task');
   const isSubmitDisabled = !task;
 
+  const handleCreateNewCycle = (data: NewCycleFormValues) => {
+    createNewCycle(data);
+    reset();
+  };
+
+  const handleInterruptCycle = () => interruptCurrentCycle();
+
   return (
     <HomeContainer>
       <form onSubmit={handleSubmit(handleCreateNewCycle)}>
-        <FormContainer>
-          <label htmlFor='task'>Vou trabalhar em</label>
-          <TaskInput
-            type='text'
-            list='task-suggestions'
-            id='task'
-            placeholder='Dê um nome para o seu projeto'
-            {...register('task')}
-          />
-          <datalist id='task-suggestions'>
-            <option value='hehe' />
-            <option value='hehe' />
-            <option value='hehe' />
-            <option value='hehe' />
-          </datalist>
+        <FormProvider {...newCycleForm}>
+          <NewCycleForm />
+        </FormProvider>
 
-          <label htmlFor='minutesDuration'>durante</label>
-          <MinutesAmountInput
-            type='number'
-            id='minutesDuration'
-            placeholder='00'
-            step={5}
-            min={5}
-            max={60}
-            {...register('minutesAmount', { valueAsNumber: true })}
-          />
+        <CycleCountdown />
 
-          <span>minutos.</span>
-        </FormContainer>
-
-        <CountdownContainer>
-          <span>0</span>
-          <span>0</span>
-          <Separator>:</Separator>
-          <span>0</span>
-          <span>0</span>
-        </CountdownContainer>
-
-        <StartCountdownButton disabled={isSubmitDisabled} type='submit'>
-          <Play size={24} />
-          Começar
-        </StartCountdownButton>
+        {activeCycle ? (
+          <StopCountdownButton type='button' onClick={handleInterruptCycle}>
+            <HandPalm size={24} />
+            Interromper
+          </StopCountdownButton>
+        ) : (
+          <StartCountdownButton disabled={isSubmitDisabled} type='submit'>
+            <Play size={24} />
+            Começar
+          </StartCountdownButton>
+        )}
       </form>
     </HomeContainer>
   );
