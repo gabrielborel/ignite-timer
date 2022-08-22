@@ -1,3 +1,20 @@
-export function App() {
-  return <h1>Hello WOrld</h1>;
-}
+import { BrowserRouter } from 'react-router-dom';
+import { Router } from './Router';
+import { ThemeProvider } from 'styled-components';
+import { GlobalStyle } from './styles/global';
+import { defaultTheme } from './styles/themes/default';
+import { CyclesContextProvider } from './contexts/CyclesContext';
+
+export const App = () => {
+  return (
+    <ThemeProvider theme={defaultTheme}>
+      <BrowserRouter>
+        <CyclesContextProvider>
+          <Router />
+        </CyclesContextProvider>
+      </BrowserRouter>
+
+      <GlobalStyle />
+    </ThemeProvider>
+  );
+};
